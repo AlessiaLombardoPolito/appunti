@@ -1,0 +1,190 @@
+1. SELECT
+Il comando SELECT viene utilizzato per recuperare dati da un database.
+
+-- Seleziona tutte le colonne dalla tabella 'employees'
+SELECT * FROM employees;
+
+-- Seleziona solo le colonne 'name' e 'salary' dalla tabella 'employees'
+SELECT name, salary FROM employees;
+
+
+
+2. WHERE
+Il comando WHERE viene utilizzato per filtrare i record.
+
+-- Seleziona tutti gli impiegati con un salario superiore a 50000
+SELECT * FROM employees WHERE salary > 50000;
+
+-- Seleziona gli impiegati con il nome 'John'
+SELECT * FROM employees WHERE name = 'John';
+
+
+
+
+3. JOIN
+Il comando JOIN viene utilizzato per combinare righe da due o più tabelle.
+
+-- Seleziona tutti gli impiegati e i loro dipartimenti utilizzando un INNER JOIN
+SELECT employees.name, departments.department_name
+FROM employees
+INNER JOIN departments ON employees.department_id = departments.id;
+
+-- Seleziona tutti gli impiegati e i loro dipartimenti, includendo impiegati senza dipartimento utilizzando un LEFT JOIN
+SELECT employees.name, departments.department_name
+FROM employees
+LEFT JOIN departments ON employees.department_id = departments.id;
+
+
+
+
+4. GROUP BY
+Il comando GROUP BY viene utilizzato per raggruppare i risultati in base a una o più colonne.
+
+-- Raggruppa gli impiegati per dipartimento e calcola il salario medio per ciascun dipartimento
+SELECT department_id, AVG(salary) AS average_salary
+FROM employees
+GROUP BY department_id;
+
+
+
+
+5. ORDER BY
+Il comando ORDER BY viene utilizzato per ordinare i risultati.
+
+-- Seleziona tutti gli impiegati ordinati per salario in ordine crescente
+SELECT * FROM employees ORDER BY salary;
+
+-- Seleziona tutti gli impiegati ordinati per salario in ordine decrescente
+SELECT * FROM employees ORDER BY salary DESC;
+
+
+
+
+6. HAVING
+Il comando HAVING viene utilizzato per filtrare i gruppi creati con GROUP BY.
+
+-- Raggruppa gli impiegati per dipartimento e mostra solo quelli con un salario medio superiore a 50000
+SELECT department_id, AVG(salary) AS average_salary
+FROM employees
+GROUP BY department_id
+HAVING AVG(salary) > 50000;
+
+
+
+
+7. LIMIT
+Il comando LIMIT viene utilizzato per specificare il numero di record da restituire.
+
+
+-- Seleziona i primi 10 impiegati ordinati per salario
+SELECT * FROM employees ORDER BY salary DESC LIMIT 10;
+
+
+
+8. DISTINCT
+Il comando DISTINCT viene utilizzato per restituire solo i valori distinti.
+
+-- Seleziona tutti i dipartimenti distinti dalla tabella 'employees'
+SELECT DISTINCT department_id FROM employees;
+
+
+
+
+esempi:
+"""select tmp.ID, tmp.IATA_CODE, count(*) as N
+                    from (
+                    SELECT a.ID , a.IATA_CODE , f.AIRLINE_ID, count(*) as n
+                    FROM airports a , flights f
+                    WHERE a.ID = f.ORIGIN_AIRPORT_ID or a.ID = f.DESTINATION_AIRPORT_ID
+                    group by a.ID , a.IATA_CODE , f.AIRLINE_ID
+                    ) as tmp
+                    group by tmp.ID, tmp.IATA_CODE
+                    having N >= %s"""
+        """la query più interna:
+        - Questa subquery seleziona gli aeroporti (airports a) e i voli (flights f) combinati dove l'ID dell'aeroporto
+        corrisponde all'ID dell'aeroporto di partenza (ORIGIN_AIRPORT_ID) o di destinazione (DESTINATION_AIRPORT_ID)
+        nel dataset dei voli.
+        - Conta il numero di record (voli) per ciascuna combinazione di aeroporto, codice IATA e ID della compagnia aerea.
+        - Raggruppa per a.ID (ID dell'aeroporto), a.IATA_CODE (codice IATA dell'aeroporto) e f.AIRLINE_ID (ID della
+        compagnia aerea).
+        - Ordina i risultati per a.ID e f.AIRLINE_ID.
+
+        la query esterna:
+        - La query esterna seleziona i risultati della subquery interna (alias tmp) e conta il numero di righe risultanti
+        per ciascun ID e IATA_CODE.
+        - Raggruppa per tmp.ID e tmp.IATA_CODE.
+        - HAVING N >= 5 filtra i risultati per includere solo gli aeroporti che hanno almeno 5 record di voli
+        (sia come origine che come destinazione)."""
+
+
+
+
+
+
+        SELECT t.teamCode , t.ID , sum(s.salary) as totSalary
+                      FROM salaries s , teams t , appearances a
+                      WHERE s.`year` = t.`year` and t.`year` = a.`year`
+                      and a.`year` = %s
+                      and t.ID = a.teamID
+                      and s.playerID = a.playerID
+                      GROUP by t.teamCode"""
+        #Questa query SQL è progettata per calcolare il totale degli stipendi per ciascuna squadra in un determinato
+        # anno. Funzionamento Generale:
+        #
+        # La query seleziona i codici delle squadre (t.teamCode) e i loro ID (t.ID), insieme alla somma totale degli
+        # stipendi dei loro giocatori (sum(s.salary)).
+        # Le tabelle salaries, teams e appearances sono unite implicitamente utilizzando condizioni che assicurano
+        # che i dati corrispondano per lo stesso anno e per le stesse squadre e giocatori.
+        # Viene filtrato solo per l'anno specificato (%s), e i risultati sono raggruppati per codice della squadra.
+        # Alla fine, la query restituisce il totale degli stipendi per ciascuna squadra nell'anno specificato.
+
+
+
+ SELECT a.*, sum(t.Milliseconds) as totD
+                    FROM album a , track t
+                    WHERE a.AlbumId = t.AlbumId
+                    GROUP by a.AlbumId
+                    having totD > %s
+
+Questa query SQL recupera informazioni sugli album e calcola la somma della durata di tutte le tracce associate a
+ciascun album, restituendo solo gli album in cui la somma della durata totale supera un certo valore, indicato come %s
+
+La query collega la tabella album con la tabella track attraverso la colonna AlbumId, che rappresenta l'identificativo
+comune tra le due tabelle. WHERE a.AlbumId = t.AlbumId specifica che la traccia t appartiene all'album a.
+
+Aggregazione:
+sum(t.Milliseconds) as totD: Calcola la somma della durata di tutte le tracce (in millisecondi) per ciascun album.
+Il risultato viene aggregato per ogni album.
+
+Raggruppamento:
+GROUP BY a.AlbumId: Raggruppa i risultati per ogni album in base al suo AlbumId. Questo è necessario perché si sta
+eseguendo una funzione aggregata (la somma della durata delle tracce).
+
+Filtraggio con HAVING:
+HAVING totD > %s: Filtra i risultati, restituendo solo gli album la cui somma della durata delle tracce (totD) supera
+un certo valore. %s è un placeholder che sarà sostituito da un valore numerico durante l'esecuzione della query.
+
+Risultati restituiti:
+La query restituisce tutte le colonne della tabella album (a.*), insieme alla colonna calcolata totD che rappresenta
+la somma totale delle durate delle tracce associate all'album.
+
+
+
+
+
+SELECT distinctrow t.AlbumId as a1, t2.AlbumId as a2
+                    FROM playlisttrack p , track t , playlisttrack p2 , track t2
+                    WHERE p2.PlaylistId = p.PlaylistId
+                    and p2.TrackId = t2.TrackId
+                    and p.TrackId = t.TrackId
+                    and t.AlbumId < t2.AlbumId
+
+
+La query seleziona coppie distinte di AlbumId (a1, a2) da due tabelle di tracce musicali, basandosi sui seguenti criteri:
+
+Si cercano tracce che appartengono alla stessa playlist (p.PlaylistId = p2.PlaylistId).
+Si associa ogni traccia a due album distinti tramite gli identificatori t.AlbumId e t2.AlbumId, con la condizione che
+t.AlbumId sia inferiore a t2.AlbumId.
+Viene eseguita una selezione di coppie distinte, escludendo duplicati.
+In sintesi, la query restituisce coppie di album ordinati, appartenenti alla stessa playlist, in cui l'AlbumId del
+primo è minore del secondo.

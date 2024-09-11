@@ -1,0 +1,26 @@
+I grafi vanno creati nel modello
+se voglio un grafo semplice e non orientato uso nx.Graph()
+se lo voglio orientato nx.Digraph()
+
+
+SE DEVO CREARE UN GRAFO DOVE TUTTI I NODI SONO COLLEGATI:
+#per collegare tutti i nodi con degli archi ci sono due modi
+    # Modo Brutto:
+        """for t in self._grafo.nodes:
+            for t2 in self._grafo.nodes:
+                if t!=t2 :
+                    self._grafo.add_edge(t,t2)"""
+
+
+    # Modo Bello: c'è una libreria chiamata itertools, nella quale c'è un metodo "combination"
+        myedges = list(itertools.combinations(self._allteams, 2))  #lo metto in una lista perché combination mi
+        # produce un iterable. così viene creata una lista di tuple, con nodo di partenza e nodo di arrivo che è
+        # già utilizzabile con il metodo add_edges_from
+
+        self._grafo.add_edges_from(myedges)    posso fare così perché il metodo mi da già una lista di tuple
+                                                se avessi avuto una lista di liste non avrei potuto farlo
+
+
+per avere la COMPONENTE CONNESSA  :
+    def getConnessaDetails(self, v0):
+        conn = nx.node_connected_component(self._graph, v0)

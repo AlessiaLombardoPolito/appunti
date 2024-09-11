@@ -1,0 +1,137 @@
+per accedere al valore di un DD
+        forma = self._view.ddshape.value
+
+per accedere ad un text
+        dTOTtxt = self._view._txtInSoglia.value
+
+per riempire un dd
+        for year in anni:
+            self._view.ddyear.options.append(ft.dropdown.Option(f"{year}"))
+
+oppure :
+    def fillDDYear(self):
+        anni = self._model.getALlYears()  #prendo una lista di oggetti
+        yearsDD = map(lambda x:ft.dropdown.Option(x), anni) #e applico una funzione ad ognuno
+        self._view._ddAnno.options = yearsDD  # map prende come primo argomento una funzione e un iterable
+        # e applica quella funzione ad ogni iterable
+        self._view._page.update()
+        #questo corrisponde a fare :
+        # yearsDD = []
+        # for y in anni:
+            # yearsDD.append(ft.dropdown.Option(y))
+
+    OPPURE :
+    # providersDD = map(labda x:ft.dropdown.Option(x), providers)
+         #descrizione : lambda ci indica che stiamo definendo una funzione che prende
+        # come argomento una variabile
+        # x e restituisce come uscita  ft.dropdown.Option(x)
+        # self._view._ddProvider.options.extend(providersDD)
+        # self._view.update_page()
+
+per riempire la listview
+        self._view.txt_result.controls.append(ft.Text(f"Soglia inserita non valida. Inserire un intero. "))
+
+
+per pulire la listview
+            self._view._txt_result.controls.clear()
+
+
+per pulire il grafo
+        self._grafo.clear()
+
+
+per controllare il dato inserito
+in una stringa
+       try:
+            dTOT = int(dTOTtxt)
+       except ValueError:
+            warnings.warn("Soglia not integer.")
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text(f"Soglia inserita non valida. Inserire un intero. "))
+            return
+
+
+       try:
+            intd = float(valore)
+
+       except ValueError:
+            self._view.txt_result.controls.append(ft.Text(f"Il numero inserito non è un valore numerico"))
+            self._view._page.update()
+
+
+       oopure
+         def handleCreaGrafo(self, e):
+                try:
+                    totDint = int(self._view._txtInDurata.value)
+                except ValueError:
+                    warnings.warn_explicit(message="duration not integer",
+                                           category=TypeError,
+                                           filename="controller.py",
+                                           lineno=15)
+                    return
+
+in un dd
+    def handle_CreaGrafo(self, e):
+        provider = self._view._ddProvider.value
+        if provider is None:
+            print("Seleziona un provider")
+            self._view._txt_result.controls.clear()
+            self._view._txt_result.controls.append(ft.Text("Seleziona un provider."))
+            self._view.update_page()
+            return
+
+
+se mi chiede "appena viene selezionato un anno", senza un tasto corrispondente, devo mettere nel dropdown
+"on_change = handleDDselection(self, e)"  importsnte ricordarsi "e" perché è un evento, poi vado nel controller e mi
+creo il metodo handleDDselection che fa quello che mi chiede nella consegna
+
+
+
+quando nel DAO tiro un intero oggetto con tutti gli attributi posso scrivere
+        for row in cursor:
+            result.append(Team(**row))
+
+però devo crearmi il nuovo oggetto team nel modello così.
+
+from dataclasses import dataclass
+
+@dataclass
+class Team:
+    ID : int
+    year: int
+    teamCode : str
+    divID: str
+
+
+def __hash__(self):
+    return hash(self.ID)
+
+def __str__(self):
+    return f"{self.name}"
+
+
+MAPPA spesso è comoda (per esempio per recuperare un oggetto dall'id, infatti prima ho creato l'oggetto team),
+si mette nell'init del model :  self._idMapTeams = {}
+
+e poi sempre nel model
+
+    def getTeamsOfYear(self, anno):
+        self._allteams = DAO.getTeamsOfYear(anno)
+        self._idMapTeams ={t.ID : t for t in self._allteams}
+        # questa è la forma compatta di :
+        # for t in self._allTeams:
+        #   self._idMapTeams[t.ID] = t
+        return self._allteams
+
+
+VICINI :
+    nel modello
+    def getSortedNeighbors(self, v0):
+        vicini = self._grafo.neighbors(v0)
+        viciniTuple = []
+        for v in vicini:
+            viciniTuple.append((v, self._grafo[v0][v]["weight"]))
+
+        viciniTuple.sort(key=lambda x: x[1], reverse=True) #scrivo x[1] perché vogliio ordinare per peso
+        # che è il secondo elemento della tupla, e reverse = true per averle in ordine decr
+        return viciniTuple
